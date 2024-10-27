@@ -1,3 +1,5 @@
+import org.json.simple.parser.ParseException;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class Project implements ActionListener {
     private JButton enter;
     private int WIDTH = 800;
     private int HEIGHT = 700;
+    String name = "";
 
 
     public Project() {
@@ -31,7 +34,7 @@ public class Project implements ActionListener {
         mainFrame = new JFrame();
         topPanel = new JPanel();
         bottomPanel = new JPanel();
-        nameArea = new JTextArea();
+        nameArea = new JTextArea(name);
         affiliationArea = new JTextArea("Affiliation: ");
         alliesArea = new JTextArea("Allies: ");
         enemiesArea = new JTextArea("Enemies: ");
@@ -72,7 +75,7 @@ public class Project implements ActionListener {
     }
 
     private void showEventDemo() {
-
+        enter.setActionCommand("ENTER");
 
         mainFrame.setVisible(true);
     }
@@ -85,6 +88,18 @@ public class Project implements ActionListener {
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
+            ReadJson reader = new ReadJson();
+            if (command.equals("ENTER")) {
+                try {
+                    reader.pull();
+                } catch (ParseException ex) {
+                    throw new RuntimeException(ex);
+                }
+                name = nameArea.getText();
+                for(int i =0;i<20;i++){
+
+                }
+            }
 
         }
     }
