@@ -36,8 +36,8 @@ public class Project implements ActionListener {
         bottomPanel = new JPanel();
         nameArea = new JTextArea(name);
         affiliationArea = new JTextArea("Affiliation: ");
-        alliesArea = new JTextArea("Allies: ");
-        enemiesArea = new JTextArea("Enemies: ");
+        alliesArea = new JTextArea("Allies: \n");
+        enemiesArea = new JTextArea("Enemies: \n");
         nameLabel = new JLabel("NAME:", JLabel.CENTER);
         randomEnter = new JButton("RANDOMIZE");
         enter = new JButton("ENTER");
@@ -49,8 +49,8 @@ public class Project implements ActionListener {
 
         mainFrame.setSize(WIDTH, HEIGHT);
         mainFrame.setLayout(new GridLayout(2, 2));
-        topPanel.setLayout(new GridLayout(5,1));
-        bottomPanel.setLayout(new GridLayout(1,2));
+        topPanel.setLayout(new GridLayout(5, 1));
+        bottomPanel.setLayout(new GridLayout(1, 2));
         mainFrame.setVisible(true);
 
         nameArea.setLineWrap(true);
@@ -76,6 +76,10 @@ public class Project implements ActionListener {
 
     private void showEventDemo() {
         enter.setActionCommand("ENTER");
+        enter.addActionListener(new ButtonClickListener());
+
+        randomEnter.setActionCommand("RANDOM");
+        randomEnter.addActionListener(new ButtonClickListener());
 
         mainFrame.setVisible(true);
     }
@@ -89,18 +93,42 @@ public class Project implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
             ReadJson reader = new ReadJson();
+            try {
+                reader.pull();
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
             if (command.equals("ENTER")) {
-                try {
-                    reader.pull();
-                } catch (ParseException ex) {
-                    throw new RuntimeException(ex);
-                }
                 name = nameArea.getText();
-                for(int i =0;i<20;i++){
 
+
+            }
+            if(command.equals("RANDOM")) {
+                int randIndex = (int)(Math.random()*20);
+                alliesArea.setText("Allies: \n");
+                enemiesArea.setText("Enemies: \n");
+
+                nameArea.setText(reader.characters[randIndex].name);
+                if (reader.characters[randIndex].affiliation != null) {
+                    affiliationArea.setText("Affiliation: " + reader.characters[randIndex].affiliation);
+                }
+                else{
+                    affiliationArea.setText("No affiliation");
+                }
+                for (int i =0; i < reader.characters[randIndex].allies.size();i++){
+                    alliesArea.append((String) reader.characters[randIndex].allies.get(i) +"\n");
+                }
+                if(reader.characters[randIndex].allies != null) {
+                    for (int i = 0; i < reader.characters[randIndex].allies.size(); i++) {
+                        alliesArea.append((String) reader.characters[randIndex].allies.get(i) + "\n");
+                    }
+                }
+                if(reader.characters[randIndex].enemies != null) {
+                    for (int i = 0; i < reader.characters[randIndex].enemies.size(); i++) {
+                        enemiesArea.append((String) reader.characters[randIndex].enemies.get(i) + "\n");
+                    }
                 }
             }
-
         }
     }
 }

@@ -18,7 +18,7 @@ import org.json.simple.parser.ParseException;
 
 // Program for print data in JSON format.
 public class ReadJson {
-    character[] characters = new character[20];
+     character[] characters = new character[20];
     public static void main(String args[]) throws ParseException {
         // In java JSONObject is used to create JSON object
         // which is a subclass of java.util.HashMap.
@@ -46,9 +46,7 @@ public class ReadJson {
                     (conn.getInputStream())));
 
 
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
                 totalJson+=output;
             }
 
@@ -64,7 +62,7 @@ public class ReadJson {
         JSONParser parser = new JSONParser();
         JSONArray jsonArray = (JSONArray) parser.parse(totalJson);
 
-        System.out.println(jsonArray);
+
 
         try {
             for(int i = 0; i<jsonArray.size();i++) {
@@ -74,10 +72,6 @@ public class ReadJson {
                 ArrayList enemies = (ArrayList) jsonObj.get("enemies");
                 ArrayList allies = (ArrayList) jsonObj.get("allies");
                 characters[i]  = new character(name, affiliation, enemies, allies);
-                System.out.println(characters[i].name);
-                System.out.println(characters[i].affiliation);
-                System.out.println(characters[i].enemies);
-                System.out.println(characters[i].allies);
             }
         }
 
