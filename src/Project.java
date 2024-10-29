@@ -9,16 +9,18 @@ public class Project implements ActionListener {
     private JFrame mainFrame;
     private JPanel topPanel;
     private JPanel bottomPanel;
+    private JPanel LRpanel;
+    private JButton left;
+    private JButton right;
     private JTextArea nameArea;
     private JTextArea affiliationArea;
     private JTextArea alliesArea;
     private JTextArea enemiesArea;
     private JLabel nameLabel;
     private JButton randomEnter;
-    private JButton enter;
     private int WIDTH = 800;
     private int HEIGHT = 700;
-    String name = "";
+    int index = 0;
 
 
     public Project() {
@@ -27,6 +29,7 @@ public class Project implements ActionListener {
 
     public static void main(String[] args) {
         Project swingControlDemo = new Project();
+
         swingControlDemo.showEventDemo();
     }
 
@@ -34,14 +37,16 @@ public class Project implements ActionListener {
         mainFrame = new JFrame();
         topPanel = new JPanel();
         bottomPanel = new JPanel();
-        nameArea = new JTextArea(name);
+        LRpanel = new JPanel();
+        left = new JButton("<--");
+        right = new JButton("-->");
+        nameArea = new JTextArea("Name: ");
         affiliationArea = new JTextArea("Affiliation: ");
         alliesArea = new JTextArea("Allies: \n");
         enemiesArea = new JTextArea("Enemies: \n");
-        nameLabel = new JLabel("NAME:", JLabel.CENTER);
         randomEnter = new JButton("RANDOMIZE");
-        enter = new JButton("ENTER");
 
+        nameArea.setEditable(false);
         affiliationArea.setEditable(false);
         alliesArea.setEditable(false);
         enemiesArea.setEditable(false);
@@ -49,8 +54,9 @@ public class Project implements ActionListener {
 
         mainFrame.setSize(WIDTH, HEIGHT);
         mainFrame.setLayout(new GridLayout(2, 2));
-        topPanel.setLayout(new GridLayout(5, 1));
+        topPanel.setLayout(new GridLayout(4, 1));
         bottomPanel.setLayout(new GridLayout(1, 2));
+        LRpanel.setLayout(new GridLayout(1,2));
         mainFrame.setVisible(true);
 
         nameArea.setLineWrap(true);
@@ -64,9 +70,10 @@ public class Project implements ActionListener {
 
         mainFrame.add(topPanel);
         mainFrame.add(bottomPanel);
-        topPanel.add(nameLabel);
         topPanel.add(nameArea);
-        topPanel.add(enter);
+        topPanel.add(LRpanel);
+        LRpanel.add(left);
+        LRpanel.add(right);
         topPanel.add(randomEnter);
         topPanel.add(affiliationArea);
         bottomPanel.add(alliesArea);
@@ -75,13 +82,17 @@ public class Project implements ActionListener {
     }
 
     private void showEventDemo() {
-        enter.setActionCommand("ENTER");
-        enter.addActionListener(new ButtonClickListener());
 
+        left.setActionCommand("LEFT");
+        right.setActionCommand("RIGHT");
         randomEnter.setActionCommand("RANDOM");
         randomEnter.addActionListener(new ButtonClickListener());
+        left.addActionListener(new ButtonClickListener());
+        right.addActionListener(new ButtonClickListener());
+
 
         mainFrame.setVisible(true);
+        setText(index);
     }
 
     @Override
@@ -92,42 +103,49 @@ public class Project implements ActionListener {
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
-            ReadJson reader = new ReadJson();
-            try {
-                reader.pull();
-            } catch (ParseException ex) {
-                throw new RuntimeException(ex);
+            if (command.equals("LEFT")) {
+                index -=1;
+                if (index <0){
+                    index = 19;
+                }
             }
-            if (command.equals("ENTER")) {
-                name = nameArea.getText();
-
+            else if (command.equals("RIGHT")){
+                index +=1;
+                if(index>19){
+                    index = 0;
+                }
+            }
+            else if(command.equals("RANDOM")) {
+                index =(int)(Math.random()*20);
 
             }
-            if(command.equals("RANDOM")) {
-                int randIndex = (int)(Math.random()*20);
-                alliesArea.setText("Allies: \n");
-                enemiesArea.setText("Enemies: \n");
-
-                nameArea.setText(reader.characters[randIndex].name);
-                if (reader.characters[randIndex].affiliation != null) {
-                    affiliationArea.setText("Affiliation: " + reader.characters[randIndex].affiliation);
-                }
-                else{
-                    affiliationArea.setText("No affiliation");
-                }
-                for (int i =0; i < reader.characters[randIndex].allies.size();i++){
-                    alliesArea.append((String) reader.characters[randIndex].allies.get(i) +"\n");
-                }
-                if(reader.characters[randIndex].allies != null) {
-                    for (int i = 0; i < reader.characters[randIndex].allies.size(); i++) {
-                        alliesArea.append((String) reader.characters[randIndex].allies.get(i) + "\n");
-                    }
-                }
-                if(reader.characters[randIndex].enemies != null) {
-                    for (int i = 0; i < reader.characters[randIndex].enemies.size(); i++) {
-                        enemiesArea.append((String) reader.characters[randIndex].enemies.get(i) + "\n");
-                    }
-                }
+            setText(index);
+        }
+    }
+    public void setText(int index){
+        ReadJson reader = new ReadJson();
+        try {
+            reader.pull();
+        } catch (ParseException ex) {
+            throw new RuntimeException(ex);
+        }
+        alliesArea.setText("Allies: \n");
+        enemiesArea.setText("Enemies: \n");
+        nameArea.setText("Name: "+reader.characters[index].name);
+        if (reader.characters[index].affiliation != null) {
+            affiliationArea.setText("Affiliation: " + reader.characters[index].affiliation);
+        }
+        else{
+            affiliationArea.setText("Affiliation: No affiliation");
+        }
+        if(reader.characters[index].allies != null) {
+            for (int i = 0; i < reader.characters[index].allies.size(); i++) {
+                alliesArea.append((String) reader.characters[index].allies.get(i) + "\n");
+            }
+        }
+        if(reader.characters[index].enemies != null) {
+            for (int i = 0; i < reader.characters[index].enemies.size(); i++) {
+                enemiesArea.append((String) reader.characters[index].enemies.get(i) + "\n");
             }
         }
     }
